@@ -15,13 +15,15 @@ bool Example2Task(TinyBehavior* Behavior, double DeltaTime)
 
 int main()
 {
-	TinyBehavior Behavior(ExampleTask);
-	Behavior.AddChild(&Behavior, Example2Task);
+	TinyBehavior Behavior("Example", ExampleTask);
+	Behavior.AddChild("Example2", &Behavior, Example2Task);
 
 	if (Behavior.Execute(&Behavior, 0))
 	{
 		//do something
 	}
+
+	Behavior.RemoveChildByIndex(0);
 
 	return 0;
 

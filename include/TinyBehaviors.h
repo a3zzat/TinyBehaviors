@@ -2,6 +2,8 @@
 #define TINY_BEHAVIORS_H
 #define MAX_CHILDREN 10
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 struct TinyBehavior;
 
@@ -13,15 +15,15 @@ struct TinyBehavior
 	TinyBehavior()
 	{
 		ChildCount = 0;
-		CurrentTask = 0;
+		CurrentTask = NULL;
 		for (unsigned int Iter = 0; Iter < MAX_CHILDREN; Iter++)
 		{
-			Children[Iter] = 0;
+			Children[Iter] = NULL;
 		}
-		ChildCount = 0;
-		ParentNode = 0;
+		ChildCount = NULL;
+		ParentNode = NULL;
 	}
-	TinyBehavior(Task NewTask)
+	TinyBehavior(const char* BehaviorName, Task NewTask)
 	{
 		CurrentTask = NewTask;
 		for (unsigned int Iter = 0; Iter < MAX_CHILDREN; Iter++)
@@ -30,6 +32,7 @@ struct TinyBehavior
 		}
 		ChildCount = 0;
 		ParentNode = 0;
+		Name = BehaviorName;
 	}
 
 	bool Execute(TinyBehavior* Behavior, double DeltaTime)
@@ -44,22 +47,46 @@ struct TinyBehavior
 		return false;
 	}
 
-	TinyBehavior* AddChild(TinyBehavior* Parent, Task NewTask)
+	TinyBehavior* AddChild(const char* BehaviorName, TinyBehavior* Parent, Task NewTask)
 	{
 		//pretty much the same as new
 		TinyBehavior* NewBehavior = (TinyBehavior*)malloc(sizeof(NewBehavior));
-		*NewBehavior = TinyBehavior(NewTask);
+		*NewBehavior = TinyBehavior(BehaviorName, NewTask);
 		Children[ChildCount] = NewBehavior;
 		Children[ChildCount]->ParentNode = Parent;
 		ChildCount++;
 		return Parent;
 	}
 
+	void RemoveChildByIndex(unsigned int BehaviorIndex)
+	{
+		if (BehaviorIndex >= 0 && BehaviorIndex < MAX_CHILDREN)
+		{
+			Children[BehaviorIndex] = NULL;
+			ChildCount--;
+		}
+	}
+	
+	void RemoveChildByName(const char* BehaviorName)
+	{
+		if (BehaviorName != NULL)
+		{
+			for (unsigned int Iter = 0; Iter < MAX_CHILDREN; Iter++)
+			{
+				if (!strcmp(BehaviorName, Children[Iter]->Name))
+				{
+					Children[Iter] = NULL;
+					ChildCount--;
+					break;
+				}
+			}
+		}
+	}
+
 	Task CurrentTask;
 	TinyBehavior* ParentNode;
 	TinyBehavior* Children[MAX_CHILDREN];
 	unsigned int ChildCount;
+	const char* Name;
 };
-
-
 #endif
