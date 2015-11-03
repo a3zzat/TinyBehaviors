@@ -1,2 +1,2 @@
 # TinyBehaviors
-a small behavior tree tool for the C programming language
+a small behavior tree tool written in c++
